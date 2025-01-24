@@ -8,6 +8,8 @@ const productRoutes = require("./routes/productRoutes");
 
 const authRoutes = require("./routes/authRoutes");
 
+const newsletterRoutes = require("./routes/newsletterRoutes");
+
 const app = express();
 
 app.use(cors());
@@ -19,6 +21,8 @@ app.use(morgan("dev"));
 app.use("/api/products", productRoutes);
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/sub", newsletterRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
