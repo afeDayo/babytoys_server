@@ -46,7 +46,7 @@ const getCart = async (req, res) => {
   }
 };
 
-// server/controllers/cartController.js
+// Correction: Added cart existence check.
 const updateQuantity = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -54,12 +54,17 @@ const updateQuantity = async (req, res) => {
     const userId = req.user.id;
 
     const cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
     const item = cart.items.find(
       (item) => item.product.toString() === productId
     );
 
-    if (!item)
+    if (!item) {
       return res.status(404).json({ message: "Item not found in cart" });
+    }
 
     item.quantity = quantity;
     await cart.save();
@@ -76,6 +81,10 @@ const removeFromCart = async (req, res) => {
     const userId = req.user.id;
 
     const cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
     cart.items = cart.items.filter(
       (item) => item.product.toString() !== productId
     );
