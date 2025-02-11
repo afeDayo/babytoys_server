@@ -9,8 +9,8 @@ router.get("/:id", productController.getProductById);
 // Protect the rating endpoint:
 router.post("/:id/rate", authenticate, productController.rateProduct);
 
-router.post("/:id/like", productController.likeProduct); // NEW route
+router.post("/:id/like", authenticate, productController.likeProduct); // NEW route
 
-router.post("/:id/unlike", productController.unlikeProduct);
+router.post("/:id/unlike", authenticate, productController.unlikeProduct);
 
 module.exports = router;
