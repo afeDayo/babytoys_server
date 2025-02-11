@@ -72,9 +72,27 @@ const likeProduct = async (req, res, next) => {
   }
 };
 
+const unlikeProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+    if (product.likes > 0) {
+      product.likes -= 1;
+    }
+    await product.save();
+    res.status(200).json({ message: "Product unliked", likes: product.likes });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   rateProduct,
   likeProduct,
+  unlikeProduct,
 };
