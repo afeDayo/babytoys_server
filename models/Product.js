@@ -43,6 +43,7 @@ const productSchema = new mongoose.Schema({
   ],
 
   likes: { type: Number, default: 0 }, // NEW: store likes count
+  likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 module.exports = mongoose.model("Product", productSchema);

@@ -57,16 +57,27 @@ const rateProduct = async (req, res, next) => {
   }
 };
 
+// In productController.js
+
 const likeProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const userId = req.user._id; // assuming authentication populates req.user
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
-    product.likes += 1;
-    await product.save();
-    res.status(200).json({ message: "Product liked", likes: product.likes });
+    // Prevent duplicate likes
+    if (!product.likedBy.includes(userId)) {
+      product.likedBy.push(userId);
+      product.likes = product.likedBy.length;
+      await product.save();
+    }
+    res.status(200).json({
+      message: "Product liked",
+      likes: product.likes,
+      likedBy: product.likedBy,
+    });
   } catch (err) {
     next(err);
   }
@@ -75,15 +86,22 @@ const likeProduct = async (req, res, next) => {
 const unlikeProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const userId = req.user._id;
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
-    if (product.likes > 0) {
-      product.likes -= 1;
-    }
+    // Remove the user from the likedBy array if present.
+    product.likedBy = product.likedBy.filter(
+      (uid) => uid.toString() !== userId.toString()
+    );
+    product.likes = product.likedBy.length;
     await product.save();
-    res.status(200).json({ message: "Product unliked", likes: product.likes });
+    res.status(200).json({
+      message: "Product unliked",
+      likes: product.likes,
+      likedBy: product.likedBy,
+    });
   } catch (err) {
     next(err);
   }
