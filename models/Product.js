@@ -41,6 +41,8 @@ const productSchema = new mongoose.Schema({
       rating: Number,
     },
   ],
+
+  likes: { type: Number, default: 0 }, // NEW: store likes count
 });
 
 module.exports = mongoose.model("Product", productSchema);
