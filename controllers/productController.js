@@ -62,13 +62,14 @@ const rateProduct = async (req, res, next) => {
 const likeProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userId = req.user._id; // assuming authentication populates req.user
+    const userId = req.user.id; // Updated from req.user._id
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
-    // Prevent duplicate likes
-    if (!product.likedBy.includes(userId)) {
+    // Convert likedBy entries to strings for accurate comparison
+    const likedByIds = product.likedBy.map((uid) => uid.toString());
+    if (!likedByIds.includes(userId.toString())) {
       product.likedBy.push(userId);
       product.likes = product.likedBy.length;
       await product.save();
@@ -86,7 +87,7 @@ const likeProduct = async (req, res, next) => {
 const unlikeProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userId = req.user._id;
+    const userId = req.user.id; // Updated from req.user._id
     const product = await Product.findById(id);
     if (!product) {
       return res.status(404).json({ message: "Product not found." });
